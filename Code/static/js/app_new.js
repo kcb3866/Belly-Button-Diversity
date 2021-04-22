@@ -48,10 +48,11 @@ function createBargraph(id) {
     d3.json("samples.json").then((data) => {
 
         var samples = data.samples;
-        var resultsArray = samples.filter(d => d.id === id);
+        var resultsArray = samples.filter(d => d.id == id);
         var results = resultsArray[0];
         var otu_ids = results.otu_ids;
-        var otu_lables = results.otu_lables;
+        var text = results.otu_lables;
+        
         var sample_values = results.sample_values;
 
         var yticks = otu_ids.slice(0,10).map(outID => `OTU ${otu_ids}`);
@@ -60,7 +61,7 @@ function createBargraph(id) {
             x: sample_values.slice(0,10).reverse(),
             y:yticks,
             type:"bar",
-            text: otu_lables.slice(0,10).reverse(),
+            // text: text.slice(0,10).reverse(),
             orientation: "h"
         }];
 
@@ -68,7 +69,7 @@ function createBargraph(id) {
             title: "Top 10 Bacteria found",
             margin: { t: 30, l: 150}
         };
-        Plotly.newPlot();
+        Plotly.newPlot("bar", barData, barLayout);
 
     });
 
@@ -76,6 +77,40 @@ function createBargraph(id) {
 
 function createBubbleGraph(id) {
     console.log("calling createBubbleGraph", id);
+
+    d3.json("samples.json").then((data) => {
+        var samples = data.samples;
+        var resultsArray = samples.filter(d => d.id == id);
+        var results = resultsArray[0];
+
+        var otu_lables = results.otu_lables;
+        var otu_ids = results.otu_ids;
+        var sample_values = results.sample_values;
+
+        var bubbleData = [
+            {
+                x: otu_ids,
+                y: sample_values,
+                text: otu_lables,
+                mode: "markers",
+                marker: {
+                    size: sample_values,
+                    color: otu_ids,
+                    colorscale: "Earth"
+                }
+            }
+        ];
+
+        var bubbleLayout = {
+            title: "Bacteria Culters per Sample",
+            margin: {t: 0},
+            hovermode: "closest",
+            xaxis: {title: "OTU_ID"},
+            margin: {t: 30}
+        };
+
+        Plotly.newPlot("bubble", bubbleData. bubbleLayout);
+    });
 };
 
 function optionChanged(id) {
